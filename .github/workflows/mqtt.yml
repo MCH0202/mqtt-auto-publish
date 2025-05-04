@@ -1,0 +1,23 @@
+name: MQTT 每分钟自动发布消息
+
+on:
+  schedule:
+    - cron: '*/1 * * * *'   # 每1分钟运行一次
+  workflow_dispatch:         # 可手动触发测试
+
+jobs:
+  mqtt-publisher:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 安装 Python MQTT 库并发布消息
+        run: |
+          pip install paho-mqtt
+          python3 -c "
+import paho.mqtt.publish as publish
+publish.single(
+    topic='/fridgeguard/test/message',
+    payload='2',
+    hostname='test.mosquitto.org',
+    port=1883,
+    retain=True
+)"
