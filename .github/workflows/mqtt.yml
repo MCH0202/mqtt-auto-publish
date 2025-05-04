@@ -1,26 +1,26 @@
-name: MQTT 每5分钟随机发布 2 或 3（纯数字）
+name: MQTT 每10分钟发布 2 或 3（强保留）
 
 on:
   schedule:
     - cron: '*/10 * * * *'
     - cron: '0 9 * * *'
   workflow_dispatch:
-
 jobs:
   mqtt-publisher:
     runs-on: ubuntu-latest
     steps:
-      - name: 发布随机值（2或3）
+      - name: 发布带 retained 的消息（确保生效）
         run: |
           pip install paho-mqtt
-          echo "import paho.mqtt.publish as publish" > publish.py
+          echo "import paho.mqtt.client as mqtt" > publish.py
           echo "import random" >> publish.py
-          echo "value = random.choice(['2', '3'])" >> publish.py
-          echo "publish.single(" >> publish.py
-          echo "    topic='/fridgeguard/test/message'," >> publish.py
-          echo "    payload=value," >> publish.py
-          echo "    hostname='test.mosquitto.org'," >> publish.py
-          echo "    port=1883," >> publish.py
-          echo "    retain=True" >> publish.py
-          echo ")" >> publish.py
+          echo "broker = 'test.mosquitto.org'" >> publish.py
+          echo "port = 1883" >> publish.py
+          echo "topic = '/fridgeguard/test/message'" >> publish.py
+          echo "payload = random.choice(['2', '3'])" >> publish.py
+          echo "client = mqtt.Client()" >> publish.py
+          echo "client.connect(broker, port, 60)" >> publish.py
+          echo "result = client.publish(topic, payload, retain=True)" >> publish.py
+          echo "result.wait_for_publish()" >> publish.py
+          echo "client.disconnect()" >> publish.py
           python3 publish.py
