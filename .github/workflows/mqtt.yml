@@ -2,7 +2,9 @@ name: MQTT 每5分钟随机发布 2 或 3（纯数字）
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/10 * * * *'
+    - cron: '0 9 * * *'
+
   workflow_dispatch:
 
 jobs:
