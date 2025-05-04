@@ -1,4 +1,4 @@
-name: MQTT 每5分钟仿真稳定冷藏温度（门关闭）
+name: MQTT 每5分钟仿真冷藏温度（整数纯数字）
 
 on:
   schedule:
@@ -9,7 +9,7 @@ jobs:
   mqtt-publisher:
     runs-on: ubuntu-latest
     steps:
-      - name: 发布冷藏温度（自然波动整数）
+      - name: 发布模拟温度（纯数字）
         run: |
           pip install paho-mqtt
           echo "import paho.mqtt.publish as publish" > publish.py
@@ -17,10 +17,9 @@ jobs:
           echo "base_temp = 4.0" >> publish.py
           echo "delta = random.uniform(-0.5, 0.5)" >> publish.py
           echo "temp = int(round(base_temp + delta))" >> publish.py
-          echo "payload = '{\"temp\": ' + str(temp) + '}'" >> publish.py
           echo "publish.single(" >> publish.py
           echo "    topic='/fridgeguard/test/message'," >> publish.py
-          echo "    payload=payload," >> publish.py
+          echo "    payload=str(temp)," >> publish.py
           echo "    hostname='test.mosquitto.org'," >> publish.py
           echo "    port=1883," >> publish.py
           echo "    retain=True" >> publish.py
