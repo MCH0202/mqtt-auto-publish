@@ -8,24 +8,20 @@ on:
 jobs:
   mqtt-publisher:
     runs-on: ubuntu-latest
-    timeout-minutes: 2  # 最多允许运行2分钟，防止死锁
+    timeout-minutes: 2  # 防止任务卡住
     steps:
-      - name: 发布模拟温度（使用 paho-mqtt 安全方式）
+      - name: 发布模拟温度（使用稳定 MQTT 客户端）
         run: |
           pip install paho-mqtt
-          echo """\
-import paho.mqtt.client as mqtt
-import random
-
-broker = 'test.mosquitto.org'
-port = 1883
-topic = '/fridgeguard/test/message'
-payload = random.choice(['2', '3'])
-
-client = mqtt.Client(protocol=mqtt.MQTTv311)
-client.connect(broker, port, 60)
-result = client.publish(topic, payload, retain=True)
-result.wait_for_publish()
-client.disconnect()
-""" > publish.py
+          echo "import paho.mqtt.client as mqtt" > publish.py
+          echo "import random" >> publish.py
+          echo "broker = 'test.mosquitto.org'" >> publish.py
+          echo "port = 1883" >> publish.py
+          echo "topic = '/fridgeguard/test/message'" >> publish.py
+          echo "payload = random.choice(['2', '3'])" >> publish.py
+          echo "client = mqtt.Client(protocol=mqtt.MQTTv311)" >> publish.py
+          echo "client.connect(broker, port, 60)" >> publish.py
+          echo "result = client.publish(topic, payload, retain=True)" >> publish.py
+          echo "result.wait_for_publish()" >> publish.py
+          echo "client.disconnect()" >> publish.py
           python3 publish.py
