@@ -1,25 +1,31 @@
-name: MQTT 每5分钟仿真冷藏温度（整数纯数字）
+name: MQTT 每30分钟仿真冷藏温度（整数纯数字）
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '*/30 * * * *'  # 每30分钟运行一次
   workflow_dispatch:
 
 jobs:
   mqtt-publisher:
     runs-on: ubuntu-latest
+    timeout-minutes: 2  # 最多允许运行2分钟，防止死锁
     steps:
-      - name: 发布模拟温度（纯数字）
+      - name: 发布模拟温度（使用 paho-mqtt 安全方式）
         run: |
           pip install paho-mqtt
-          echo "import paho.mqtt.publish as publish" > publish.py
-          echo "import random" >> publish.py
-          echo "value = random.choice(['2', '3'])" >> publish.py
-          echo "publish.single(" >> publish.py
-          echo "    topic='/fridgeguard/test/message'," >> publish.py
-          echo "    payload=str(value)," >> publish.py
-          echo "    hostname='test.mosquitto.org'," >> publish.py
-          echo "    port=1883," >> publish.py
-          echo "    retain=True" >> publish.py
-          echo ")" >> publish.py
+          echo """\
+import paho.mqtt.client as mqtt
+import random
+
+broker = 'test.mosquitto.org'
+port = 1883
+topic = '/fridgeguard/test/message'
+payload = random.choice(['2', '3'])
+
+client = mqtt.Client(protocol=mqtt.MQTTv311)
+client.connect(broker, port, 60)
+result = client.publish(topic, payload, retain=True)
+result.wait_for_publish()
+client.disconnect()
+""" > publish.py
           python3 publish.py
