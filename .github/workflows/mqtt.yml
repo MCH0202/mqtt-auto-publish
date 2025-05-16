@@ -2,7 +2,7 @@ name: MQTT 每5分钟仿真冷藏温度（整数纯数字）
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 jobs:
