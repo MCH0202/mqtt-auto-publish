@@ -17,7 +17,7 @@ jobs:
           echo "import random" >> publish.py
           echo "broker = 'test.mosquitto.org'" >> publish.py
           echo "port = 1883" >> publish.py
-          echo "topic = '/fridgeguard/test12/message'" >> publish.py
+          echo "topic = '/fridgeguard/test/message'" >> publish.py
           echo "payload = random.choice(['2', '3'])" >> publish.py
           echo "client = mqtt.Client(protocol=mqtt.MQTTv311)" >> publish.py
           echo "client.connect(broker, port, 60)" >> publish.py
